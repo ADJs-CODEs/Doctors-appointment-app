@@ -2,8 +2,8 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { AuthProvider, useAuth } from "../context/AuthContext";
 import "../global.css";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 function RootLayoutNav() {
   const { token, loading } = useAuth();
