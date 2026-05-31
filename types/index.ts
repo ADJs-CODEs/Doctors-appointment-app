@@ -68,3 +68,6 @@ export interface Connection {
   watcher?: User;
   requester?: User;
 }
+export default function Types() {
+  return null;
+}

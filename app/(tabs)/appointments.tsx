@@ -8,10 +8,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "../context/AuthContext";
-import type { Appointment } from "../types";
-import { API_PATHS } from "../utils/apiPaths";
-import axiosInstance from "../utils/axiosInstance";
+import { useAuth } from "../../context/AuthContext";
+import type { Appointment } from "../../types";
+import { API_PATHS } from "../../utils/apiPath";
+import axiosInstance from "../../utils/axiosInstance";
 
 const slotDateFormat = (slotDate: string) => {
   const months = [
@@ -125,7 +125,7 @@ export default function AppointmentsScreen() {
       {/* Header */}
       <View className="bg-slate-900 px-6 pt-16 pb-8">
         <Text className="text-slate-400 text-xs font-black uppercase tracking-widest mb-1">
-          ADJ's CODEs
+          ADJs CODEs
         </Text>
         <Text className="text-white text-3xl font-black">My Appointments</Text>
         <Text className="text-slate-400 text-sm font-medium mt-1">

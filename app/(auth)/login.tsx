@@ -1,5 +1,5 @@
-import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { Link } from "expo-router";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -11,14 +11,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "../context/AuthContext";
-import { API_PATHS } from "../utils/apiPaths";
-import axiosInstance from "../utils/axiosInstance";
+import { useAuth } from "../../context/AuthContext";
+import { API_PATHS } from "../../utils/apiPath";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function LoginScreen() {
-  const { login } = useAuth();
-  const router = useRouter();
+  const { login, doctorLogin } = useAuth();
 
+  const [role, setRole] = useState<"patient" | "doctor">("patient");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -32,15 +32,27 @@ export default function LoginScreen() {
 
     try {
       setLoading(true);
-      const { data } = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
-        email: email.toLowerCase().trim(),
-        password,
-      });
 
-      if (data.success) {
-        await login(data.token);
+      if (role === "patient") {
+        const { data } = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+          email: email.toLowerCase().trim(),
+          password,
+        });
+        if (data.success) {
+          await login(data.token);
+        } else {
+          Alert.alert("Login Failed", data.message);
+        }
       } else {
-        Alert.alert("Login Failed", data.message);
+        const { data } = await axiosInstance.post(API_PATHS.AUTH.DOCTOR_LOGIN, {
+          email: email.toLowerCase().trim(),
+          password,
+        });
+        if (data.success) {
+          await doctorLogin(data.token);
+        } else {
+          Alert.alert("Login Failed", data.message);
+        }
       }
     } catch (error: any) {
       Alert.alert(
@@ -67,7 +79,7 @@ export default function LoginScreen() {
             <Text className="text-teal-400 text-4xl font-black">+</Text>
           </View>
           <Text className="text-white text-3xl font-black uppercase tracking-tight">
-            ADJ's CODEs
+            ADJs CODEs
           </Text>
           <Text className="text-slate-400 text-sm font-medium mt-1 uppercase tracking-widest">
             Pharmaceutical
@@ -79,9 +91,31 @@ export default function LoginScreen() {
           <Text className="text-slate-900 text-3xl font-black mb-2">
             Welcome Back
           </Text>
-          <Text className="text-slate-400 text-base font-medium mb-10">
-            Sign in to your health account
+          <Text className="text-slate-400 text-base font-medium mb-8">
+            Sign in to your account
           </Text>
+
+          {/* Role selector */}
+          <View className="flex-row bg-slate-100 rounded-2xl p-1 mb-8">
+            {(["patient", "doctor"] as const).map((r) => (
+              <TouchableOpacity
+                key={r}
+                onPress={() => setRole(r)}
+                className={`flex-1 py-3 rounded-xl items-center ${
+                  role === r ? "bg-slate-900" : ""
+                }`}
+                activeOpacity={0.8}
+              >
+                <Text
+                  className={`font-black text-sm uppercase tracking-widest ${
+                    role === r ? "text-white" : "text-slate-400"
+                  }`}
+                >
+                  {r === "patient" ? "🏥 Patient" : "🩺 Doctor"}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
 
           {/* Email */}
           <View className="mb-5">
@@ -101,7 +135,7 @@ export default function LoginScreen() {
           </View>
 
           {/* Password */}
-          <View className="mb-4">
+          <View className="mb-8">
             <Text className="text-slate-500 text-sm font-black uppercase tracking-widest mb-2 ml-1">
               Password
             </Text>
@@ -125,13 +159,6 @@ export default function LoginScreen() {
             </View>
           </View>
 
-          {/* Forgot Password */}
-          <TouchableOpacity className="mb-8 self-end">
-            <Text className="text-teal-600 font-black text-sm">
-              Forgot Password?
-            </Text>
-          </TouchableOpacity>
-
           {/* Login Button */}
           <TouchableOpacity
             onPress={handleLogin}
@@ -143,36 +170,29 @@ export default function LoginScreen() {
               <ActivityIndicator color="#2dd4bf" />
             ) : (
               <Text className="text-white font-black text-base uppercase tracking-widest">
-                Sign In
+                Sign In as {role === "patient" ? "Patient" : "Doctor"}
               </Text>
             )}
           </TouchableOpacity>
 
-          {/* Divider */}
-          <View className="flex-row items-center mb-5">
-            <View className="flex-1 h-px bg-slate-100" />
-            <Text className="text-slate-300 text-xs font-black uppercase tracking-widest px-4">
-              or
-            </Text>
-            <View className="flex-1 h-px bg-slate-100" />
-          </View>
+          {/* Register link — patients only */}
+          {role === "patient" && (
+            <View className="flex-row justify-center items-center mb-6">
+              <Text className="text-slate-400 text-base font-medium">
+                New patient?{" "}
+              </Text>
+              <Link href="/(auth)/register" asChild>
+                <TouchableOpacity>
+                  <Text className="text-teal-600 font-black text-base">
+                    Create Account
+                  </Text>
+                </TouchableOpacity>
+              </Link>
+            </View>
+          )}
 
-          {/* Register Link */}
-          <View className="flex-row justify-center items-center">
-            <Text className="text-slate-400 text-base font-medium">
-              New patient?{" "}
-            </Text>
-            <Link href="/(auth)/register" asChild>
-              <TouchableOpacity>
-                <Text className="text-teal-600 font-black text-base">
-                  Create Account
-                </Text>
-              </TouchableOpacity>
-            </Link>
-          </View>
-
-          {/* Elderly helper text */}
-          <View className="mt-8 bg-teal-50 rounded-2xl p-4 border border-teal-100">
+          {/* Elderly helper */}
+          <View className="mt-4 bg-teal-50 rounded-2xl p-4 border border-teal-100">
             <Text className="text-teal-700 text-sm font-black mb-1">
               Need help signing in?
             </Text>

@@ -5,8 +5,8 @@ export const API_PATHS = {
   AUTH: {
     LOGIN: "/api/user/login",
     REGISTER: "/api/user/register",
-    GOOGLE_AUTH: "/api/user/google-auth",
     FORGOT_PASSWORD: "/api/user/forgot-password",
+    DOCTOR_LOGIN: "/api/doctor/login", // ADD THIS
   },
   USER: {
     GET_PROFILE: "/api/user/get-profile",
@@ -33,3 +33,6 @@ export const API_PATHS = {
     MESSAGE: "/api/chat/message",
   },
 };
+export default function ApiPaths() {
+  return null;
+}
