@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
-import type { Appointment } from "../../types";
+import { type Appointment, doseLabel } from "../../types";
 import { API_PATHS } from "../../utils/apiPath";
 import axiosInstance from "../../utils/axiosInstance";
 
@@ -591,7 +591,7 @@ export default function HomeScreen() {
                           marginTop: 2,
                         }}
                       >
-                        {med.dosagePerDay}x daily · {med.remainingQuantity}{" "}
+                        {doseLabel(med)} · {med.remainingQuantity}{" "}
                         remaining
                       </Text>
                       <View

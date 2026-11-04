@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import type { Appointment, Medicine } from "../../types";
+import { type Appointment, doseLabel, hoursBetweenDoses, type Medicine } from "../../types";
 import { API_PATHS } from "../../utils/apiPath";
 import axiosInstance from "../../utils/axiosInstance";
 
@@ -24,7 +24,8 @@ const getNextDoseTime = (
 ): { isEarly: boolean; hoursLeft: number } => {
   if (!med.lastTaken || !med.dosagePerDay)
     return { isEarly: false, hoursLeft: 0 };
-  const intervalHours = 24 / med.dosagePerDay;
+  // "every 8 hours" is stored as 8 with frequencyType "interval"; it is NOT 8 doses a day
+  const intervalHours = hoursBetweenDoses(med);
   const lastTakenTime = new Date(med.lastTaken).getTime();
   const nextDoseTime = lastTakenTime + intervalHours * 60 * 60 * 1000;
   const now = Date.now();
@@ -222,7 +223,7 @@ export default function MedicationsScreen() {
                           {med.name}
                         </Text>
                         <Text className="text-slate-400 text-xs font-bold uppercase tracking-wider">
-                          {med.dosagePerDay}x daily · Prescribed by{" "}
+                          {doseLabel(med)} · Prescribed by{" "}
                           {med.doctorName}
                         </Text>
                       </View>

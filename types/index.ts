@@ -19,11 +19,27 @@ export interface Doctor {
   about: string;
   available: boolean;
   fees: number;
+  /** unset = no video calls */
+  videoFees?: number;
   address: { line1: string; line2: string };
+}
+
+export type VisitKind = "in-person" | "video";
+
+/** A doctor's free times for one kind of visit (GET /api/availability/:docId). */
+export interface Availability {
+  available: boolean;
+  offersInPerson: boolean;
+  offersVideo: boolean;
+  fees: number;
+  videoFees: number | null;
+  days: { slotDate: string; iso: string; weekday: number; slots: string[] }[];
 }
 
 export interface Medicine {
   name: string;
+  /** "daily": dosagePerDay doses a day. "interval": one dose every dosagePerDay hours. */
+  frequencyType?: "daily" | "interval";
   dosagePerDay: number;
   totalQuantity: number;
   remainingQuantity: number;
@@ -57,7 +73,27 @@ export interface Appointment {
   healthData?: HealthData;
   patientStatus?: "Stable" | "Critical" | "Completed";
   messages?: { content: string; sentAt: string; isCritical: boolean }[];
+  /** older appointments have none: they were clinic visits */
+  kind?: VisitKind;
+  paymentMethod?: "stripe" | "wallet";
+  /** set while the time is only held for payment (30 min); an unpaid hold then disappears */
+  holdExpiresAt?: string;
+  /** a no-show: who didn't come */
+  missed?: { by: "patient" | "doctor"; markedBy: string; at: string };
+  refund?: { percent: number; amount: number; status: "refunded" | "manual" | "failed"; method?: "stripe" | "wallet" };
 }
+
+/** Hours between two doses (same rule as the website and the server). */
+export const hoursBetweenDoses = (m: Pick<Medicine, "frequencyType" | "dosagePerDay">) => {
+  const value = m.dosagePerDay > 0 ? m.dosagePerDay : 1;
+  return m.frequencyType === "interval" ? value : 24 / value;
+};
+
+/** "3 times a day" or "every 8 hours". */
+export const doseLabel = (m: Pick<Medicine, "frequencyType" | "dosagePerDay">) =>
+  m.frequencyType === "interval"
+    ? `Every ${m.dosagePerDay} hour${m.dosagePerDay === 1 ? "" : "s"}`
+    : `${m.dosagePerDay}× a day`;
 
 export interface Connection {
   _id: string;
