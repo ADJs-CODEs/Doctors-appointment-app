@@ -9,7 +9,20 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
+import { API_PATHS } from "../../utils/apiPath";
 import axiosInstance from "../../utils/axiosInstance";
+import { joinVideoVisit } from "../../utils/payment";
+
+// still to happen: not completed, cancelled or recorded as missed
+const isOpen = (a: any) => !a.isCompleted && !a.cancelled && !a.missed;
+const statusOf = (a: any) =>
+  a.cancelled
+    ? { text: "Cancelled", box: "bg-red-50 border-red-100", ink: "text-red-500" }
+    : a.missed
+      ? { text: a.missed.by === "patient" ? "Patient no-show" : "Missed by you", box: "bg-amber-50 border-amber-100", ink: "text-amber-700" }
+      : a.isCompleted
+        ? { text: "Completed", box: "bg-teal-50 border-teal-100", ink: "text-teal-600" }
+        : { text: a.kind === "video" ? "Video call to come" : "Clinic visit to come", box: "bg-slate-50 border-slate-100", ink: "text-slate-500" };
 
 export default function DoctorAppointmentsScreen() {
   const { dToken } = useAuth();
@@ -56,8 +69,8 @@ export default function DoctorAppointmentsScreen() {
             );
           if (aCritical && !bCritical) return -1;
           if (!aCritical && bCritical) return 1;
-          const aActive = !a.isCompleted && !a.cancelled;
-          const bActive = !b.isCompleted && !b.cancelled;
+          const aActive = isOpen(a);
+          const bActive = isOpen(b);
           if (aActive && !bActive) return -1;
           if (!aActive && bActive) return 1;
           return b.date - a.date;
@@ -128,7 +141,7 @@ export default function DoctorAppointmentsScreen() {
         </Text>
         <Text className="text-white text-3xl font-black">Patient Schedule</Text>
         <Text className="text-slate-400 text-sm font-medium mt-1">
-          {appointments.filter((a) => !a.isCompleted && !a.cancelled).length}{" "}
+          {appointments.filter(isOpen).length}{" "}
           active · Critical first
         </Text>
       </View>
@@ -185,7 +198,7 @@ export default function DoctorAppointmentsScreen() {
                       item.payment ? "text-teal-600" : "text-amber-600"
                     }`}
                   >
-                    {item.payment ? "Paid" : "Cash"}
+                    {item.payment ? "Paid" : "Unpaid"}
                   </Text>
                 </View>
               </View>
@@ -199,34 +212,23 @@ export default function DoctorAppointmentsScreen() {
               </View>
 
               {/* Status badge */}
-              <View
-                className={`py-2 rounded-xl items-center border ${
-                  item.cancelled
-                    ? "bg-red-50 border-red-100"
-                    : item.isCompleted
-                      ? "bg-teal-50 border-teal-100"
-                      : "bg-slate-50 border-slate-100"
-                }`}
-              >
-                <Text
-                  className={`text-[10px] font-black uppercase tracking-widest ${
-                    item.cancelled
-                      ? "text-red-500"
-                      : item.isCompleted
-                        ? "text-teal-600"
-                        : "text-slate-500"
-                  }`}
-                >
-                  {item.cancelled
-                    ? "Cancelled"
-                    : item.isCompleted
-                      ? "Completed"
-                      : "Pending Consultation"}
-                </Text>
+              <View className={`py-2 rounded-xl items-center border ${statusOf(item).box}`}>
+                <Text className={`text-[10px] font-black uppercase tracking-widest ${statusOf(item).ink}`}>{statusOf(item).text}</Text>
               </View>
 
+              {/* paid video visits: join from 10 minutes before */}
+              {isOpen(item) && item.kind === "video" && item.payment && (
+                <TouchableOpacity
+                  onPress={() => joinVideoVisit(API_PATHS.DOCTOR.VIDEO_JOIN(item._id))}
+                  className="mt-2 bg-violet-600 rounded-xl py-3 items-center"
+                  activeOpacity={0.8}
+                >
+                  <Text className="text-white font-black text-xs uppercase tracking-widest">Join video call</Text>
+                </TouchableOpacity>
+              )}
+
               {/* Cancel button for active appointments */}
-              {!item.cancelled && !item.isCompleted && (
+              {isOpen(item) && (
                 <TouchableOpacity
                   onPress={() => cancelAppointment(item._id)}
                   className="mt-2 border border-red-100 bg-red-50 rounded-xl py-3 items-center"

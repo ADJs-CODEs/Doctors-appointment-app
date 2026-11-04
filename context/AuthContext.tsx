@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import axiosInstance from "../utils/axiosInstance";
+import axiosInstance, { setSessionExpiredHandler } from "../utils/axiosInstance";
 
 interface User {
   _id: string;
@@ -107,6 +107,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (token) await fetchUser(token);
     if (dToken) await fetchDoctor(dToken);
   };
+
+  // the server said the session is no longer valid: log out properly (back to the login screen)
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      logout();
+    });
+    return () => setSessionExpiredHandler(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const loadTokens = async () => {

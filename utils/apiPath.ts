@@ -15,6 +15,17 @@ export const API_PATHS = {
     FETCH_APPOINTMENTS: "/api/user/appointments",
     CANCEL_APPOINTMENT: "/api/user/cancel-appointment",
     LOG_DOSE: "/api/user/update-dose",
+    PAY_STRIPE: "/api/user/payment-stripe",
+    PAYMENT_STATUS: "/api/user/payment-status",
+    VIDEO_JOIN: (appointmentId: string) => `/api/user/video/${appointmentId}/join`,
+  },
+  WALLET: {
+    OVERVIEW: "/api/wallet",
+    PAY_APPOINTMENT: "/api/wallet/pay-appointment",
+  },
+  AVAILABILITY: (docId: string, kind: "in-person" | "video") => `/api/availability/${docId}?kind=${kind}`,
+  DOCTOR: {
+    VIDEO_JOIN: (appointmentId: string) => `/api/doctor/video/${appointmentId}/join`,
   },
   CONNECTIONS: {
     REQUEST: "/api/connections/request",

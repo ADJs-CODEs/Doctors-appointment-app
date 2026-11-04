@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import type { Appointment, User } from "../../types";
+import { type Appointment, doseLabel, type User } from "../../types";
 import { API_PATHS } from "../../utils/apiPath";
 import axiosInstance from "../../utils/axiosInstance";
 
@@ -335,7 +335,7 @@ export default function PatientViewScreen() {
                         {med.name}
                       </Text>
                       <Text className="text-slate-400 text-xs font-bold uppercase">
-                        {med.dosagePerDay}x daily · {med.remainingQuantity}{" "}
+                        {doseLabel(med)} · {med.remainingQuantity}{" "}
                         remaining
                       </Text>
                     </View>

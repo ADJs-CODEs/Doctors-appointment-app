@@ -40,6 +40,7 @@ function RootLayoutNav() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="(doctor)" />
       <Stack.Screen name="patient/[id]" />
+      <Stack.Screen name="book/[id]" />
     </Stack>
   );
 }

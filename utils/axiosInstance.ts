@@ -11,11 +11,20 @@ const axiosInstance = axios.create({
   },
 });
 
+// AuthContext registers this so an expired session logs the app out, instead of only
+// deleting the stored token while the screens still think someone is logged in.
+let onSessionExpired: (() => void) | null = null;
+export const setSessionExpiredHandler = (fn: (() => void) | null) => {
+  onSessionExpired = fn;
+};
+
+// Send whichever login is active: patient ("token") or doctor ("dToken"). A request that
+// sets its own Authorization header keeps it.
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = await SecureStore.getItemAsync("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (!config.headers.Authorization) {
+      const token = (await SecureStore.getItemAsync("token")) ?? (await SecureStore.getItemAsync("dToken"));
+      if (token) config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -25,9 +34,9 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      await SecureStore.deleteItemAsync("token");
-    }
+    // a wrong password on the login screen is also a 401: only a logged-in request means "expired"
+    const sentToken = !!error.config?.headers?.Authorization;
+    if (error.response?.status === 401 && sentToken) onSessionExpired?.();
     return Promise.reject(error);
   },
 );
