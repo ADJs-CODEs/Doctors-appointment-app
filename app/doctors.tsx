@@ -3,9 +3,9 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import type { Doctor } from "../../types";
-import { API_PATHS } from "../../utils/apiPath";
-import axiosInstance from "../../utils/axiosInstance";
+import type { Doctor } from "../types";
+import { API_PATHS } from "../utils/apiPath";
+import axiosInstance from "../utils/axiosInstance";
 
 // the same specialities the website filters by
 const SPECIALITIES = ["General physician", "Gynecologist", "Dermatologist", "Pediatricians", "Neurologist", "Gastroenterologist"];

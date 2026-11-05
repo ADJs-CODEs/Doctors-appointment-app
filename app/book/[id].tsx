@@ -16,10 +16,11 @@ const MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "O
  * holds the time for 30 minutes; paying (wallet or card) confirms it.
  */
 export default function BookScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  // ?type=video opens on video (the camera button in a chat)
+  const { id, type } = useLocalSearchParams<{ id: string; type?: string }>();
   const router = useRouter();
   const [doctor, setDoctor] = useState<Doctor | null>(null);
-  const [kind, setKind] = useState<VisitKind>("in-person");
+  const [kind, setKind] = useState<VisitKind>(type === "video" ? "video" : "in-person");
   const [slots, setSlots] = useState<Availability | null>(null);
   const [day, setDay] = useState(0);
   const [time, setTime] = useState<string | null>(null);
@@ -68,7 +69,7 @@ export default function BookScreen() {
       }
       const paid = await choosePayment(String(data.appointmentId), fee, "$", await walletSpendableCents());
       if (!paid) Alert.alert("Time held", "We're holding this time for 30 minutes. Pay from Bookings to confirm it.");
-      router.replace("/(tabs)/appointments");
+      router.replace("/(tabs)/visits");
     } catch (err: any) {
       Alert.alert("Couldn't book", err.response?.data?.message || err.message);
       loadSlots();

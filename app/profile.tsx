@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProfileScreen() {
   const { user, logout, refreshUser } = useAuth();
@@ -43,21 +43,21 @@ export default function ProfileScreen() {
       label: "Watching Over",
       subtitle: "Manage your care connections",
       color: "bg-purple-50 border-purple-100",
-      onPress: () => router.push("/(tabs)/watching"),
+      onPress: () => router.push("/watching"),
     },
     {
       emoji: "📅",
       label: "My Appointments",
       subtitle: "View and manage bookings",
       color: "bg-teal-50 border-teal-100",
-      onPress: () => router.push("/(tabs)/appointments"),
+      onPress: () => router.push("/(tabs)/visits"),
     },
     {
       emoji: "💊",
       label: "My Medications",
       subtitle: "Track your prescriptions",
       color: "bg-blue-50 border-blue-100",
-      onPress: () => router.push("/(tabs)/medications"),
+      onPress: () => router.push("/(tabs)/meds"),
     },
     {
       emoji: "🔒",

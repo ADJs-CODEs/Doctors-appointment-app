@@ -3,3 +3,26 @@
 @import "tailwindcss/utilities.css";
 
 @import "nativewind/theme";
+
+/* Clarity brand, same as the website: navy ink, teal accent, violet for video */
+@theme {
+  --color-ink: #0B2545;
+  --color-ink-2: #3B4A60;
+  --color-ink-3: #52637A;
+  --color-brand: #0EA5A4;
+  --color-brand-ink: #0B7C7B;
+  --color-brand-soft: #E3F3F1;
+  --color-video: #6D28D9;
+  --color-video-soft: #EFE9FC;
+  --color-warn: #7A3E06;
+  --color-warn-soft: #FDF3E4;
+  --color-line: #DCE4E2;
+  --color-canvas: #F3F6F5;
+
+  /* phones need one font file per weight, so each weight is its own family */
+  --font-m500: Manrope_500Medium;
+  --font-m600: Manrope_600SemiBold;
+  --font-m700: Manrope_700Bold;
+  --font-m800: Manrope_800ExtraBold;
+  --font-num: IBMPlexMono_500Medium;
+}
