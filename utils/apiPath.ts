@@ -34,6 +34,7 @@ export const API_PATHS = {
     WATCHING_OVER: "/api/connections/watching-over",
     MY_WATCHERS: "/api/connections/my-watchers",
     REMOVE: "/api/connections/remove",
+    NUDGE: "/api/connections/nudge",
     PATIENT_DATA: (patientId: string) =>
       `/api/connections/patient/${patientId}`,
   },
@@ -42,6 +43,22 @@ export const API_PATHS = {
   },
   CHAT: {
     MESSAGE: "/api/chat/message",
+  },
+  // chat with your doctors (the assistant above is CHAT)
+  MESSAGES: {
+    LIST: "/api/user/messages",
+    UNREAD: "/api/user/messages/unread",
+    THREAD: (docId: string) => `/api/user/messages/${docId}`,
+    READ: (docId: string) => `/api/user/messages/${docId}/read`,
+  },
+  SHOP: {
+    BROWSE: "/api/shop/browse",
+  },
+  WISH_WELL: {
+    ALL: "/api/wish-well/all",
+    SEND: "/api/wish-well/send-emoji",
+    PENDING: "/api/wish-well/pending-consent",
+    CONSENT: "/api/wish-well/consent",
   },
 };
 export default function ApiPaths() {
